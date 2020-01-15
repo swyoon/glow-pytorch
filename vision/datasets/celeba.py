@@ -18,14 +18,13 @@ def _find_images_and_annotation(root_dir):
     images = {}
     attr = None
     assert os.path.exists(root_dir), "{} not exists".format(root_dir)
-    for root, _, fnames in sorted(os.walk(root_dir)):
-        for fname in sorted(fnames):
-            if _is_image(fname):
-                path = os.path.join(root, fname)
-                images[os.path.splitext(fname)[0]] = path
-            elif fname.lower() == ATTR_ANNO:
-                attr = os.path.join(root, fname)
+    img_dir = os.path.join(root_dir, 'Img/img_align_celeba')
+    for fname in os.listdir(img_dir):
+        if _is_image(fname):
+            path = os.path.join(img_dir, fname)
+            images[os.path.splitext(fname)[0]] = path
 
+    attr = os.path.join(root_dir, 'Anno', ATTR_ANNO)
     assert attr is not None, "Failed to find `list_attr_celeba.txt`"
 
     # begin to parse all image
@@ -84,7 +83,7 @@ class CelebADataset(Dataset):
 
 if __name__ == "__main__":
     import cv2
-    celeba = CelebADataset("/home/chaiyujin/Downloads/Dataset/CelebA")
+    celeba = CelebADataset("/data/private/DisconnectedManifoldLearning/src/datasets/CelebA")
     d = celeba[0]
     print(d["x"].size())
     img = d["x"].permute(1, 2, 0).contiguous().numpy()
